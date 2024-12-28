@@ -17,7 +17,7 @@
 
 #include <Wire.h>
 #include <Bosch_BME280_Arduino.h>  // Bosch_BME280_Arduino V.1.1.0
-#include "SSD1306Wire.h"           // ThingPulse OLED SSD1306 - Library V.4.6.1
+#include <SSD1306Wire.h>           // ThingPulse OLED SSD1306 - Library V.4.6.1
                                    // https://github.com/ThingPulse/esp8266-oled-ssd1306
 #include <lmic.h>                  // LMIC library from the libary-manager V.5.0.1
 #include <hal/hal.h>               // ist in the lmic library
@@ -25,8 +25,8 @@
 
 static osjob_t sendjob;
 
-//#define AUSGABE        // Wenn eine Ausgabe gewünscht, "//" loeschen. 
-                       // Macht aber im Betrieb keinen Sinn
+#define AUSGABE        // Wenn eine Ausgabe gewünscht, "//" loeschen. 
+                         // Macht aber im Betrieb keinen Sinn
 // Pin mapping
 const lmic_pinmap lmic_pins = {
   // Pin mapping zum LoRaWAN-TRX-Modul
@@ -45,7 +45,7 @@ BME::Bosch_BME280 bme{BME280_I2C_ADDR_PRIM, 249.67F, true };
 void setup()
 {
   #ifdef AUSGABE
-  Serial.begin(9600);
+  Serial.begin(19200);
   while (!Serial)
   {
     yield();
@@ -75,7 +75,7 @@ void setup()
   #endif
 
   pinMode(BUILTIN_LED, OUTPUT);
-  digitalWrite(BUILTIN_LED, LOW);
+  digitalWrite(BUILTIN_LED, HIGH);
 
   os_init();
 
@@ -96,7 +96,7 @@ void loop()
 void do_send(osjob_t* j) 
 {
   volatile uint32_t zwischen = 0;
-  uint8_t sendebuf[8] = {0x00};
+  uint8_t sendebuf[7] = {0x00};
   float temp = 00.00;
   float feucht = 00.00;
   float druck = 0000.00;
@@ -110,19 +110,19 @@ void do_send(osjob_t* j)
   #endif
 
   temp = bme.getTemperature();
-  snprintf(tempbuf, 28, "Temperatur: %.2f °C", temp);
+  snprintf(tempbuf, 29, "Temperatur: %.2f °C", temp);
   #ifdef AUSGABE
   Serial.println(tempbuf);
   #endif
 
   feucht = bme.getHumidity();
-  snprintf(feuchtbuf, 28, "Feuchtigkeit: %.2f %%H", feucht);
+  snprintf(feuchtbuf, 29, "Feuchtigkeit: %.2f %%H", feucht);
   #ifdef AUSGABE
   Serial.println(feuchtbuf);
   #endif
 
   druck = bme.getPressure();
-  snprintf(druckbuf, 28, "Luftdruck:    %.2f hPa", druck);
+  snprintf(druckbuf, 29, "Luftdruck:    %.2f hPa", druck);
   #ifdef AUSGABE
   Serial.println(druckbuf);
   #endif
@@ -158,12 +158,10 @@ void do_send(osjob_t* j)
   else
   {
     // Prepare upstream data transmission at the next possible time.
-    digitalWrite(LED_BUILTIN, LOW);
-    LMIC_setTxData2(1, sendebuf, sizeof(sendebuf) - 1, 0);
+    LMIC_setTxData2(1, sendebuf, sizeof(sendebuf), 0);
     #ifdef AUSGABE
     Serial.println(F("Packet queued"));
     #endif
-    digitalWrite(LED_BUILTIN, HIGH);
     // Next TX is scheduled after TX_COMPLETE event.
   }
 }
