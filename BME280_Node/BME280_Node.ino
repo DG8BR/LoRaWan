@@ -5,7 +5,7 @@
 * 
 * Getestet mit  
 * - Arduino Ide 2.3.4
-* - ESP32 Core 3.1.0
+* - ESP32 Core 3.1.1
 * Einstellungen in der IDE: TTGO LoRa32-OLED V2.1(1.6.1)
 *
 * Beginn: 01.11.2024
@@ -129,16 +129,16 @@ void do_send(osjob_t* j)
 
   zwischen = (temp * 100) + 3000;
   sendebuf[0] = zwischen >> 8;
-  sendebuf[1] = zwischen & 0xff;
+  sendebuf[1] = zwischen;
   
   zwischen = feucht * 100;
   sendebuf[2] = zwischen >> 8;
-  sendebuf[3] = zwischen & 0xff;
+  sendebuf[3] = zwischen;
 
   zwischen = druck * 100;
   sendebuf[4] = zwischen >> 16;
   sendebuf[5] = zwischen >> 8;
-  sendebuf[6] = zwischen & 0xFF;
+  sendebuf[6] = zwischen;
 
   display.clear();
   display.drawString(1, 1, tempbuf);
