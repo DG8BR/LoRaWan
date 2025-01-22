@@ -176,6 +176,30 @@ function Decoder(bytes, port) {
      decode.Temperatur = ( (bytes[0] << 8 | bytes[1]) - 3000) / 100;
      decode.Feuchtigkeit = (bytes[2] << 8 | bytes[3]) / 100;
      decode.Luftdruck = (bytes[4] << 16 | bytes[5] << 8 | bytes[6]) / 100;
+     
+     decode.metadata = []
+     decode.metadata[0] = 
+     {
+       titel: "Zimmer",
+       einheit: "&deg:C",
+       label: "Temperatur"
+     };
+     decode.metadata[0] = 
+     {
+       titel: "Zimmer",
+       einheit: "%",
+       label: "Feuchtigkeit"
+     };
+     decode.metadata[0] = 
+     {
+       titel: "Zimmer",
+       einheit: "mbar",
+       label: "TLuftdruck"
+     };
+
+//decode.bytes = bytes; // Debugzwecke
     return decode;
 }
+
+
 ------------------------------------------------*/
